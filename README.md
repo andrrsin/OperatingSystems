@@ -1,5 +1,7 @@
 # OperatingSystems
- Repo with the laboratory contents of my Operating Systems Subject. It is divided in versions each one with more features.
+ Repo with the laboratory contents of my Operating Systems Subject. It is divided in versions each one with more features.  
+ 
+**NOTE: It is reccommended to work with an ubuntu instance or using WSL to enhance the OS.**
 # Contents of each version
 | Versions | Contents                          |
 |----------|-----------------------------------|
