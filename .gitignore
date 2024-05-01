@@ -42,4 +42,6 @@
 *.idb
 *.pdb
 
-
+# README
+/README.*
+/readme.*
