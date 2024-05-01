@@ -1,1 +1,0 @@
-I completed exercises from 0 to 2, To be honest it was quite challenging exercises for the few time we had.

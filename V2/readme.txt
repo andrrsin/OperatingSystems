@@ -1,1 +1,0 @@
-Finished exercise 6
