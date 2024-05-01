@@ -1,0 +1,25 @@
+// Students created messages
+// Format: numberOfMessage,textPrintfFormatedWithColourCodes
+//
+// numbers of messages greather than 100 for students
+//
+101,[@R0@@] User program list:\n
+102,        [@R%d@@] Program [@B%s@@] with arrival time [@R%d@@]\n
+
+103,@RERROR: There are not free entries in the process table for the program [%s]@@\n
+104,@RERROR: Program [%s] is not valid [%s]@@\n
+105,@RERROR: Program [%s] is too big@@\n
+
+106,\t[@R0@@] Ready-to-run processes queue:\n
+107,\t\t 
+108,[@G%d@@,%d], 
+109,[@G%d@@,%d]\n
+
+110,Process [@G%d - %s@@] moving from the [@G%s@@] state to the [@G%s@@] state\n
+111,Process [@G%d@@] created into the [@G%s@@] state, from program[@G%s@@]\n
+
+113,\t\t%s: 
+114,\n
+
+116,Process [@G%d – %s@@] will transfer the control of the processor to process [@G%d – %s@@]\n
+117,Process [@G%d – %s@@] cannot transfer the control of the processor to any process\n

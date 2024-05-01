@@ -1,0 +1,30 @@
+31 messages loaded from file messagesTCH.txt
+2 messages loaded from file messagesSTD.txt
+0 Asserts Loaded
+[[1;31m0[0m] [0m[1;31mSTARTING simulation
+[0m[0m[[1;31m0[0m] User program list:
+[0m        [[1;31m1[0m] Program [[1;34mprogramMEMADD[0m] with arrival time [[1;31m0[0m]
+[0m        [[1;31m2[0m] Program [[1;34mprogramVerySimple[0m] with arrival time [[1;31m0[0m]
+[0m	[[1;31m0[0m] [0m[1;32mProcess [0] created from program [SystemIdleProcess][0m
+[0m	[[1;31m0[0m] [0m[1;32mProcess [1] created from program [programMEMADD][0m
+[0m	[[1;31m0[0m] [0m[1;32mProcess [2] created from program [programVerySimple][0m
+[0m[[1;31m1[0m] [0m{0D 000 000} IRET 0 0 (PID: [1;32m1[0m, PC: [1;31m0[0m, Accumulator: [1;31m0[0m, PSW: [1;31m0002[0m [[1;31m--------------Z-[0m])
+[0m[2] {01 064 000} ADD 100 0 (PID: [1;32m1[0m, PC: [1;31m1[0m, Accumulator: [1;31m100[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[3] {08 013 000} WRITE 19 0 (PID: [1;32m1[0m, PC: [1;31m2[0m, Accumulator: [1;31m100[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[4] {11 021 013} MEMADD 33 19 (PID: [1;32m1[0m, PC: [1;31m3[0m, Accumulator: [1;31m133[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[5] {11 085 013} MEMADD 133 19 (PID: [1;32m1[0m, PC: [1;31m4[0m, Accumulator: [1;31m233[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[6] {11 0E9 013} MEMADD 233 19 (PID: [1;32m1[0m, PC: [1;31m5[0m, Accumulator: [1;31m333[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[7] {04 003 000} TRAP 3 0 (PID: [1;32m1[0m, PC: [1;31m6[0m, Accumulator: [1;31m333[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[[1;31m8[0m] [0m{0C 002 000} OS 2 0 (PID: [1;32m1[0m, PC: [1;31m242[0m, Accumulator: [1;31m333[0m, PSW: [1;31m0080[0m [[1;31m--------X-------[0m])
+[0m	[[1;31m9[0m] [0m[1;31mProcess [1 - programMEMADD] has requested to terminate[0m
+[0m[[1;31m10[0m] [0m{0D 000 000} IRET 0 0 (PID: [1;32m2[0m, PC: [1;31m0[0m, Accumulator: [1;31m333[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[11] {05 000 000} NOP 0 0 (PID: [1;32m2[0m, PC: [1;31m1[0m, Accumulator: [1;31m333[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[12] {04 005 000} TRAP 5 0 (PID: [1;32m2[0m, PC: [1;31m2[0m, Accumulator: [1;31m333[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[[1;31m13[0m] [0m{0C 002 000} OS 2 0 (PID: [1;32m2[0m, PC: [1;31m242[0m, Accumulator: [1;31m333[0m, PSW: [1;31m0080[0m [[1;31m--------X-------[0m])
+[0m	[[1;31m14[0m] [0m[1;32mProcess [2 - programVerySimple] has the processor assigned.	Processor general registers [A: 0] [B: 0][0m
+[0m[[1;31m15[0m] [0m{0D 000 000} IRET 0 0 (PID: [1;32m2[0m, PC: [1;31m2[0m, Accumulator: [1;31m333[0m, PSW: [1;31m0000[0m [[1;31m----------------[0m])
+[0m[16] {01 00A 80D} ADD 10 -13 (PID: [1;32m2[0m, PC: [1;31m3[0m, Accumulator: [1;31m-3[0m, PSW: [1;31m0004[0m [[1;31m-------------N--[0m])
+[0m[17] {08 00F 000} WRITE 15 0 (PID: [1;32m2[0m, PC: [1;31m4[0m, Accumulator: [1;31m-3[0m, PSW: [1;31m0004[0m [[1;31m-------------N--[0m])
+[0m[18] {0B 000 000} HALT 0 0 (PID: [1;32m2[0m, PC: [1;31m4[0m, Accumulator: [1;31m-3[0m, PSW: [1;31m0005[0m [[1;31m-------------N-S[0m])
+[0m[18] [1;31mEND of the simulation
+[0m[0m

@@ -1,0 +1,1 @@
+Finished exercises until 11, I wasn't able to implement the switch content of SYSCALL_YIELD of 12, but the messages were done

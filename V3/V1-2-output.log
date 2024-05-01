@@ -1,0 +1,77 @@
+31 messages loaded from file messagesTCH.txt
+15 messages loaded from file messagesSTD.txt
+0 Asserts Loaded
+[0] STARTING simulation
+[0] User program list:
+        [1] Program [programV1-2a] with arrival time [0]
+        [2] Program [programV1-2b] with arrival time [0]
+        [3] Program [programV1-2c] with arrival time [0]
+	[0] Process [3] created from program [SystemIdleProcess]
+	[0] Process [3] created into the [NEW] state, from program[SystemIdleProcess]
+	[0] Process [3 - SystemIdleProcess] moving from the [NEW] state to the [READY] state
+	[0] Ready-to-run processes queue:
+		USER: 
+		DAEMONS: [3,100]
+	[0] Process [0] created from program [programV1-2a]
+	[0] Process [0] created into the [NEW] state, from program[programV1-2a]
+	[0] Process [0 - programV1-2a] moving from the [NEW] state to the [READY] state
+	[0] Ready-to-run processes queue:
+		USER: [0,10]
+		DAEMONS: [3,100]
+	[0] Process [1] created from program [programV1-2b]
+	[0] Process [1] created into the [NEW] state, from program[programV1-2b]
+	[0] Process [1 - programV1-2b] moving from the [NEW] state to the [READY] state
+	[0] Ready-to-run processes queue:
+		USER: [0,10], [1,10]
+		DAEMONS: [3,100]
+	[0] Process [2] created from program [programV1-2c]
+	[0] Process [2] created into the [NEW] state, from program[programV1-2c]
+	[0] Process [2 - programV1-2c] moving from the [NEW] state to the [READY] state
+	[0] Ready-to-run processes queue:
+		USER: [2,5], [1,10], [0,10]
+		DAEMONS: [3,100]
+	[0] Process [2 - programV1-2c] moving from the [READY] state to the [EXECUTING] state
+[1] {0D 000 000} IRET 0 0 (PID: 2, PC: 0, Accumulator: 0, PSW: 0002 [--------------Z-])
+[2] {01 00A 005} ADD 10 5 (PID: 2, PC: 1, Accumulator: 15, PSW: 0000 [----------------])
+[3] {04 003 000} TRAP 3 0 (PID: 2, PC: 2, Accumulator: 15, PSW: 0000 [----------------])
+[4] {0C 002 000} OS 2 0 (PID: 2, PC: 242, Accumulator: 15, PSW: 0080 [--------X-------])
+	[5] Process [2 - programV1-2c] has requested to terminate
+	[5] Process [2 - programV1-2c] moving from the [EXECUTING] state to the [EXIT] state
+	[5] Process [0 - programV1-2a] moving from the [READY] state to the [EXECUTING] state
+[6] {0D 000 000} IRET 0 0 (PID: 0, PC: 0, Accumulator: 15, PSW: 0000 [----------------])
+[7] {01 014 00A} ADD 20 10 (PID: 0, PC: 1, Accumulator: 30, PSW: 0000 [----------------])
+[8] {04 004 000} TRAP 4 0 (PID: 0, PC: 2, Accumulator: 30, PSW: 0000 [----------------])
+[9] {0C 002 000} OS 2 0 (PID: 0, PC: 242, Accumulator: 30, PSW: 0080 [--------X-------])
+[11] {0D 000 000} IRET 0 0 (PID: 0, PC: 2, Accumulator: 30, PSW: 0000 [----------------])
+[12] {0E 002 000} MOV 2 0 (PID: 0, PC: 3, Accumulator: 0, PSW: 0002 [--------------Z-])
+[13] {04 003 000} TRAP 3 0 (PID: 0, PC: 4, Accumulator: 0, PSW: 0002 [--------------Z-])
+[14] {0C 002 000} OS 2 0 (PID: 0, PC: 242, Accumulator: 0, PSW: 0082 [--------X-----Z-])
+	[15] Process [0 - programV1-2a] has requested to terminate
+	[15] Process [0 - programV1-2a] moving from the [EXECUTING] state to the [EXIT] state
+	[15] Process [1 - programV1-2b] moving from the [READY] state to the [EXECUTING] state
+[16] {0D 000 000} IRET 0 0 (PID: 1, PC: 0, Accumulator: 0, PSW: 0002 [--------------Z-])
+[17] {01 046 00A} ADD 70 10 (PID: 1, PC: 1, Accumulator: 80, PSW: 0000 [----------------])
+[18] {0E 000 002} MOV 0 2 (PID: 1, PC: 2, Accumulator: 80, PSW: 0000 [----------------])
+[19] {0A 819 002} INC -25 2 (PID: 1, PC: 3, Accumulator: 80, PSW: 0000 [----------------])
+[20] {04 004 000} TRAP 4 0 (PID: 1, PC: 4, Accumulator: 80, PSW: 0000 [----------------])
+[21] {0C 002 000} OS 2 0 (PID: 1, PC: 242, Accumulator: 80, PSW: 0080 [--------X-------])
+[23] {0D 000 000} IRET 0 0 (PID: 1, PC: 4, Accumulator: 80, PSW: 0000 [----------------])
+[24] {07 002 000} ZJUMP 2 0 (PID: 1, PC: 5, Accumulator: 80, PSW: 0000 [----------------])
+[25] {04 004 000} TRAP 4 0 (PID: 1, PC: 6, Accumulator: 80, PSW: 0000 [----------------])
+[26] {0C 002 000} OS 2 0 (PID: 1, PC: 242, Accumulator: 80, PSW: 0080 [--------X-------])
+[28] {0D 000 000} IRET 0 0 (PID: 1, PC: 6, Accumulator: 80, PSW: 0000 [----------------])
+[29] {04 003 000} TRAP 3 0 (PID: 1, PC: 7, Accumulator: 80, PSW: 0000 [----------------])
+[30] {0C 002 000} OS 2 0 (PID: 1, PC: 242, Accumulator: 80, PSW: 0080 [--------X-------])
+	[31] Process [1 - programV1-2b] has requested to terminate
+	[31] Process [1 - programV1-2b] moving from the [EXECUTING] state to the [EXIT] state
+[31] The SystemIdleProcess is ready to shut down the simulator when dispatched...
+	[31] Process [3 - SystemIdleProcess] moving from the [READY] state to the [EXECUTING] state
+[32] {0D 000 000} IRET 0 0 (PID: 3, PC: 183, Accumulator: 80, PSW: 0080 [--------X-------])
+[33] {04 003 000} TRAP 3 0 (PID: 3, PC: 184, Accumulator: 80, PSW: 0080 [--------X-------])
+[34] {0C 002 000} OS 2 0 (PID: 3, PC: 242, Accumulator: 80, PSW: 0080 [--------X-------])
+	[35] Process [3 - SystemIdleProcess] has requested to terminate
+	[35] Process [3 - SystemIdleProcess] moving from the [EXECUTING] state to the [EXIT] state
+[35] The system will shut down now...
+[36] {0D 000 000} IRET 0 0 (PID: -1, PC: 241, Accumulator: 80, PSW: 0080 [--------X-------])
+[37] {0B 000 000} HALT 0 0 (PID: -1, PC: 241, Accumulator: 80, PSW: 0081 [--------X------S])
+[37] END of the simulation

@@ -1,0 +1,1 @@
+I did 1 to 3 and part a and c of the fourth exercise

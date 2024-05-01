@@ -1,0 +1,6 @@
+10
+3
+ADD 5 0
+TRAP 7 -2
+TRAP 5
+TRAP 3

@@ -1,0 +1,7 @@
+30
+5
+NOP
+ADD 5 50
+TRAP 7 5
+TRAP 4
+OS 333
