@@ -32,6 +32,8 @@ void OperatingSystem_HandleSleepCall();
 void OperatingSystem_SwitchProcess(int);
 void OperatingSystem_ReleaseMainMemory(int);
 
+int OperatingSystem_IsItNecessaryToChangeProcesses();
+
 // The process table
 // PCB processTable[PROCESSTABLEMAXSIZE];
 PCB *processTable;
@@ -220,7 +222,7 @@ int OperatingSystem_LongTermScheduler()
 				numberOfNotTerminatedUserProcesses++;
 			// Move process to the ready state
 			OperatingSystem_MoveToTheREADYState(PID);
-			ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, statesNames[0], statesNames[1]);
+			ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, statesNames[NEW], statesNames[READY]);
 
 			break;
 		}
@@ -281,7 +283,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram)
 	OperatingSystem_ShowPartitionTable("after allocating memory");
 	// Show message "Process [PID] created from program [executableName]\n"
 	// ComputerSystem_DebugMessage(TIMED_MESSAGE, 70, SYSPROC, PID, executableProgram->executableName);
-	ComputerSystem_DebugMessage(TIMED_MESSAGE, 111, SYSPROC, PID, statesNames[0], executableProgram->executableName);
+	ComputerSystem_DebugMessage(TIMED_MESSAGE, 111, SYSPROC, PID, statesNames[NEW], executableProgram->executableName);
 	ComputerSystem_DebugMessage(TIMED_MESSAGE, 143, SYSMEM, partitionIndex, loadingPhysicalAddress, processSize, PID, executableProgram->executableName);
 	return PID;
 }
@@ -403,7 +405,7 @@ void OperatingSystem_Dispatch(int PID)
 	processTable[PID].state = EXECUTING;
 	// Modify hardware registers with appropriate values for the process identified by PID
 	OperatingSystem_RestoreContext(PID);
-	ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, statesNames[1], statesNames[2]);
+	ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, statesNames[READY], statesNames[EXECUTING]);
 }
 
 // Modify hardware registers with appropriate values for the process identified by PID
@@ -413,7 +415,7 @@ void OperatingSystem_RestoreContext(int PID)
 	// New values for the CPU registers are obtained from the PCB
 	Processor_PushInSystemStack(processTable[PID].copyOfPCRegister);
 	Processor_PushInSystemStack(processTable[PID].copyOfPSWRegister);
-	Processor_SetRegisterSP(processTable[PID].copyOfSPRegister);
+	// Processor_SetRegisterSP(processTable[PID].copyOfSPRegister);
 	Processor_SetAccumulator(processTable[PID].copyOfAccumulator);
 
 	// Same thing for the MMU registers
@@ -429,7 +431,7 @@ void OperatingSystem_PreemptRunningProcess()
 	OperatingSystem_SaveContext(executingProcessID);
 	// Change the process' state
 	OperatingSystem_MoveToTheREADYState(executingProcessID);
-	ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[1]);
+	ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[EXECUTING], statesNames[READY]);
 	// The processor is not assigned until the OS selects another process
 	executingProcessID = NOPROCESS;
 }
@@ -445,7 +447,7 @@ void OperatingSystem_SaveContext(int PID)
 	processTable[PID].copyOfPCRegister = Processor_PopFromSystemStack();
 
 	// Save RegisterSP
-	processTable[PID].copyOfSPRegister = Processor_GetRegisterSP();
+	// processTable[PID].copyOfSPRegister = Processor_GetRegisterSP();
 	
 	processTable[PID].copyOfAccumulator = Processor_GetAccumulator();
 
@@ -498,11 +500,11 @@ void OperatingSystem_ReleaseMainMemory(int PID){
 void OperatingSystem_TerminateExecutingProcess()
 {
 	// ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[3]);
-	ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[4]);
+	ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[EXECUTING], statesNames[EXIT]);
 	OperatingSystem_ReleaseMainMemory(executingProcessID);
 	processTable[executingProcessID].state = EXIT;
 
-	if (executingProcessID == sipID)
+	if (executingProcessID == sipID && OperatingSystem_IsThereANewProgram() == EMPTYQUEUE)
 	{
 		// finishing sipID, change PC to address of OS HALT instruction
 		Processor_SetSSP(MAINMEMORYSIZE - 1);
@@ -537,30 +539,32 @@ void OperatingSystem_HandleSystemCall()
 {
 
 	int systemCallID;
-	int nProg;
+	// int nProg;
+	int queue;
+	int pid;
 	// Register A contains the identifier of the issued system call
 	systemCallID = Processor_GetRegisterC();
+
 
 	switch (systemCallID)
 	{
 	case SYSCALL_YIELD:
-		nProg = Heap_getFirst(readyToRunQueue[processTable[executingProcessID].queueID], numberOfReadyToRunProcesses[processTable[executingProcessID].queueID]);
-
-		if (processTable[nProg].priority == processTable[executingProcessID].priority)
-		{
-			ComputerSystem_DebugMessage(TIMED_MESSAGE, 116, SHORTTERMSCHEDULE, executingProcessID,
-										programList[processTable[executingProcessID].programListIndex]->executableName, nProg, programList[processTable[nProg].programListIndex]->executableName);
-
-			int PID = Heap_poll(readyToRunQueue[processTable[executingProcessID].queueID], QUEUE_PRIORITY, &(numberOfReadyToRunProcesses[processTable[executingProcessID].queueID]));
-			OperatingSystem_PreemptRunningProcess();
-			OperatingSystem_Dispatch(PID);
-			OperatingSystem_PrintStatus();
-		}
-		else
-		{
-			ComputerSystem_DebugMessage(TIMED_MESSAGE, 117, SHORTTERMSCHEDULE, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
-		}
-
+			queue = processTable[executingProcessID].queueID;
+			if (numberOfReadyToRunProcesses[queue] > 0){
+				pid = Heap_getFirst(readyToRunQueue[queue], numberOfReadyToRunProcesses[queue]);			
+				if (processTable[pid].priority == processTable[executingProcessID].priority && pid != executingProcessID){
+					
+					ComputerSystem_DebugMessage(TIMED_MESSAGE,116, SHORTTERMSCHEDULE, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, pid, programList[processTable[pid].programListIndex]->executableName);
+					OperatingSystem_PreemptRunningProcess();
+					pid = OperatingSystem_ShortTermScheduler();
+					OperatingSystem_Dispatch(pid);
+					OperatingSystem_PrintStatus();
+				}else{
+						ComputerSystem_DebugMessage(TIMED_MESSAGE, 117, SHORTTERMSCHEDULE, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
+				}
+			}else{
+					ComputerSystem_DebugMessage(TIMED_MESSAGE, 117, SHORTTERMSCHEDULE, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
+			}
 		break;
 	case SYSCALL_PRINTEXECPID:
 		// Show message: "Process [executingProcessID] has the processor assigned\n"
@@ -604,23 +608,25 @@ void OperatingSystem_InterruptLogic(int entryPoint)
 
 void OperatingSystem_HandleSleepCall()
 {
-	int operand2;
-	// Move to Blocked Queue
-	OperatingSystem_SaveContext(executingProcessID);
-	if (Heap_add(executingProcessID, sleepingProcessesQueue, QUEUE_WAKEUP, &(numberOfSleepingProcesses)) >= 0)
-	{
-		processTable[executingProcessID].state = BLOCKED;
-		ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[3]);
-	}
-	operand2 = Processor_GetRegisterD();
-	if (operand2 > 0)
-		processTable[executingProcessID].whenToWakeUp = operand2 + numberOfClockInterrupts + 1;
-	else
-		processTable[executingProcessID].whenToWakeUp = abs(Processor_GetAccumulator()) + numberOfClockInterrupts + 1;
+	
+	int pid = executingProcessID;
+	processTable[pid].whenToWakeUp = abs(Processor_GetAccumulator()) + numberOfClockInterrupts + 1;
 
-	// The processor is not assigned until the OS selects another process
-	executingProcessID = NOPROCESS;
-	OperatingSystem_Dispatch(OperatingSystem_ExtractFromReadyToRun());
+	if (Heap_add(pid, sleepingProcessesQueue, QUEUE_WAKEUP, (&numberOfSleepingProcesses))>=0) {
+			
+			
+			processTable[pid].state = BLOCKED;
+
+			
+			ComputerSystem_DebugMessage(TIMED_MESSAGE,110, SYSPROC, pid, programList[processTable[pid].programListIndex] -> executableName, statesNames[EXECUTING], statesNames[BLOCKED]);
+			
+			OperatingSystem_SaveContext(pid);
+		
+			pid=OperatingSystem_ShortTermScheduler();
+			
+			OperatingSystem_Dispatch(pid);
+
+		} 
 
 	OperatingSystem_PrintStatus();
 }
@@ -628,47 +634,87 @@ void OperatingSystem_HandleSleepCall()
 // In OperatingSystem.c Exercise 1-b of V2
 void OperatingSystem_HandleClockInterrupt()
 {
-	ComputerSystem_DebugMessage(TIMED_MESSAGE, 120, INTERRUPT, ++numberOfClockInterrupts);
+	
+	
+	numberOfClockInterrupts++;
+	 
+	
+	ComputerSystem_DebugMessage(TIMED_MESSAGE,120, INTERRUPT, numberOfClockInterrupts);
 
-	// Sleep check
-	int temp = numberOfSleepingProcesses; // Check if changes were done
+	
+	int movedProcesses = 0;	
+	int pid, aux, i;
+	int storeNumSleepingProcesses = numberOfSleepingProcesses;
 
-	int selectedProcess = Heap_getFirst(sleepingProcessesQueue, numberOfSleepingProcesses);
-	while (selectedProcess != NOPROCESS && processTable[selectedProcess].whenToWakeUp <= numberOfClockInterrupts)
-	{
-		int PID = Heap_poll(sleepingProcessesQueue, QUEUE_WAKEUP, &(numberOfSleepingProcesses));
-		if (Heap_add(PID, readyToRunQueue[processTable[PID].queueID], QUEUE_PRIORITY, &(numberOfReadyToRunProcesses[processTable[PID].queueID])) >= 0)
-		{
-			processTable[PID].state = READY;
-			ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, statesNames[3], statesNames[1]);
-			// OperatingSystem_PrintReadyToRunQueue();
-		}
-
-		// Obtain next one
-		selectedProcess = Heap_getFirst(sleepingProcessesQueue, numberOfSleepingProcesses);
-	}
-
-	// V3 business B)
-	int succesfullyCreatedProcesses = OperatingSystem_LongTermScheduler();
-
-	if (temp > numberOfSleepingProcesses || succesfullyCreatedProcesses > 0)
-	{
-		OperatingSystem_PrintStatus();
-		if (numberOfReadyToRunProcesses[USERPROCESSQUEUE] > 0 && (processTable[executingProcessID].queueID == DAEMONSQUEUE ||
-																  processTable[executingProcessID].priority < processTable[Heap_getFirst(readyToRunQueue[USERPROCESSQUEUE], numberOfReadyToRunProcesses[USERPROCESSQUEUE])].priority))
-		{
-			OperatingSystem_SwitchProcess(USERPROCESSQUEUE);
-		}
-		else if (numberOfReadyToRunProcesses[DAEMONSQUEUE] > 0 && processTable[executingProcessID].queueID == DAEMONSQUEUE &&
-				 processTable[executingProcessID].priority < processTable[Heap_getFirst(readyToRunQueue[DAEMONSQUEUE], numberOfReadyToRunProcesses[DAEMONSQUEUE])].priority)
-		{
-			OperatingSystem_SwitchProcess(DAEMONSQUEUE);
+	
+	for (i = 0; i < storeNumSleepingProcesses; i++) {
+		aux = processTable[Heap_getFirst(sleepingProcessesQueue, numberOfSleepingProcesses)].whenToWakeUp;
+		if (aux == numberOfClockInterrupts){
+			pid = Heap_poll(sleepingProcessesQueue, QUEUE_WAKEUP, &numberOfSleepingProcesses);
+			ComputerSystem_DebugMessage(TIMED_MESSAGE, 110, SYSPROC, pid, programList[processTable[pid].programListIndex]->executableName, statesNames[BLOCKED], statesNames[READY]);
+			OperatingSystem_MoveToTheREADYState(pid);
+			movedProcesses++;
+			OperatingSystem_PrintStatus();
 		}
 	}
-	else if (succesfullyCreatedProcesses <= 0 && executingProcessID == sipID && numberOfReadyToRunProcesses[USERPROCESSQUEUE] < 0 && numberOfReadyToRunProcesses[DAEMONSQUEUE] < 0 && OperatingSystem_IsThereANewProgram() == EMPTYQUEUE)
-	{
+	int numCreatedProcess = OperatingSystem_LongTermScheduler();
 
+	
+	if (movedProcesses > 0 || numCreatedProcess > 0) {
+		if (OperatingSystem_IsItNecessaryToChangeProcesses() != 0){
+			int auxID = executingProcessID;
+			int nextProcess = OperatingSystem_ShortTermScheduler();
+			
+			
+			ComputerSystem_DebugMessage(TIMED_MESSAGE,121, SHORTTERMSCHEDULE, auxID, programList[processTable[executingProcessID].programListIndex]->executableName, nextProcess, 
+				programList[processTable[nextProcess].programListIndex]->executableName);
+			
+			OperatingSystem_PreemptRunningProcess(executingProcessID);
+            OperatingSystem_Dispatch(nextProcess);
+			OperatingSystem_PrintStatus();
+		}
+		
+	}
+	// if the number of created processes is 0 is because the processes had any error (too big, dont exist...)
+	// check if there was any error creating the process (if there was, the process is not going to be executed) and if there are any more process waiting to be created
+	// if numCreatedProcess and numberOfProgramsInArrivalTimeQueue are both 0, we dont have any more processes to be executed so finish the execution
+	if (numCreatedProcess == 0 && numberOfProgramsInArrivalTimeQueue == 0 && numberOfNotTerminatedUserProcesses==0) {//numberOfSleepingProcesses == 0) {
 		OperatingSystem_ReadyToShutdown();
+    }
+
+	
+}
+
+int OperatingSystem_IsItNecessaryToChangeProcesses(){
+	// if the executing process is a user process
+	if (processTable[executingProcessID].queueID == USERPROCESSQUEUE){
+		// if there are more users in the ready state
+		if (numberOfReadyToRunProcesses[USERPROCESSQUEUE] > 0){
+			// compare priorities
+			int aux = processTable[Heap_getFirst(readyToRunQueue[USERPROCESSQUEUE], numberOfReadyToRunProcesses[USERPROCESSQUEUE])].priority;
+			 return aux < processTable[executingProcessID].priority;
+		}
+		// if there are no users, dont change (user executing process has more priority than daemons)
+		else {
+			return 0;
+		}
+	}
+	// if the executing process is a daemon
+	else{
+		// if there are more users, change
+		if (numberOfReadyToRunProcesses[USERPROCESSQUEUE] > 0) {
+			return 1;	
+		}
+		else{
+			// if there are more daemons, compare
+			if (numberOfReadyToRunProcesses[DAEMONSQUEUE] > 0){
+				int aux = processTable[Heap_getFirst(readyToRunQueue[DAEMONSQUEUE], numberOfReadyToRunProcesses[DAEMONSQUEUE])].priority;
+				 return aux < processTable[executingProcessID].priority;
+			}
+			// there are not more daemons so dont change
+			else
+				return 0;
+		}
 	}
 }
 

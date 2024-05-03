@@ -1,0 +1,1 @@
+I did the exercises requested and the functionalities work, however due to errors in clock interruptr regarding the process switch(idk) which it gives a seg fault.

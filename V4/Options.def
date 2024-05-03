@@ -9,5 +9,6 @@ OPTION(userProgramsFile,UserProgramsFile)       // 8
 OPTION(memorySize,300)					// 9
 OPTION(numProcesses,4)					// 10
 OPTION(intervalBetweenInterrupts,5)		// 11 V2-studentsCode
-OPTION(generateAsserts,No value)		// 12
-OPTION(help,No value)					// 13
+OPTION(memConfigFile,MemConfig)			// 12 V4-studentsCode
+OPTION(generateAsserts,No value)		// 13
+OPTION(help,No value)					// 14

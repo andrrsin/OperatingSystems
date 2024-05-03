@@ -1,4 +1,4 @@
-// V2-studentsCode
+// V4-studentsCode
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -155,6 +155,14 @@ int main(int argc, char *argv[]) {
 				case intervalBetweenInterrupts_OPT:  // V2-studentsCode
 					if (optionValue==NULL || sscanf(optionValue,"%d",&intervalBetweenInterrupts)<1 || intervalBetweenInterrupts<5)
 						intervalBetweenInterrupts=numericDefaultValue;
+					break;
+				// case MEMCONFIG_FILE:
+				case memConfigFile_OPT: // V4-studentsCode
+					if (optionValue==NULL){
+						optionValue=(char *) malloc((strlen(optionsDefault[memConfigFile_OPT])+1)*sizeof(char));
+						strcpy(optionValue,optionsDefault[memConfigFile_OPT]);
+					}
+					strcpy(MEMCONFIG_FILE,optionValue);
 					break;
 				default :
 					printf("Invalid option: %s\n", option);

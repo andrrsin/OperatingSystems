@@ -55,7 +55,7 @@ void ComputerSystem_PowerOn(int argc, char *argv[], int paramIndex) {
 	int programsFromFilesBaseIndex = ComputerSystem_ObtainProgramList(argc, argv, paramIndex);
 
 	//We create the arrivalTimeQueue with the number of total programs
-	arrivalTimeQueue = Heap_create(programsFromFilesBaseIndex);
+	arrivalTimeQueue = Heap_create(PROGRAMSMAXNUMBER);
 	
 	ComputerSystem_PrintProgramList();
 	// Request the OS to do the initial set of tasks. The last one will be
